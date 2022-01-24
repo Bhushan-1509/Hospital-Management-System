@@ -1,15 +1,27 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+class AdminLoginBtnActionListener implements ActionListener{
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        InitialLoading.load.dispose();
+        InitialLoading.load = new AdminLoginForm();
+        InitialLoading.load.setVisible(true);
+        InitialLoading.load.setDefaultCloseOperation(3);
 
+    }
+}
 
 
 public class Main extends JFrame{
     LoginBtn AdminLoginBtn;
     LoginBtn ReceptionistLoginBtn;
     LoginBtn DoctorLoginBtn;
-
+    public static Main main;
     public Main(){
+
         setLayout(null);
         setSize(1500,700);
         setTitle("Hospital Management System ");
@@ -19,6 +31,7 @@ public class Main extends JFrame{
 
         AdminLoginBtn = new LoginBtn("ADMIN");
 //        AdminLoginBtn.setBounds(30,200,200,60);
+        AdminLoginBtn.addActionListener((ActionListener)new AdminLoginBtnActionListener());
         ReceptionistLoginBtn = new LoginBtn("RECEPTIONLIST");
 //        ReceptionistLoginBtn.setBounds(70,90,300,300);
         DoctorLoginBtn = new LoginBtn("DOCTOR");

@@ -2,6 +2,7 @@ import javax.swing.*;
 
 public class InitialLoading extends JFrame {
     JProgressBar jb;
+    static JFrame load;
     public InitialLoading() throws InterruptedException {
 
         setSize(600,300);
@@ -32,10 +33,12 @@ public class InitialLoading extends JFrame {
 
     public static void main(String[] args) throws Exception {
 
-        InitialLoading load = new InitialLoading();
+        load = new InitialLoading();
         load.setVisible(true);
-        new Main();
+//        new Main();
         load.dispose();
+        load = new Main();
+
     }
 
 
