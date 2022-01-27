@@ -38,6 +38,7 @@ public class InitialLoading extends JFrame {
 //        new Main();
         load.dispose();
         load = new Main();
+        new PlayAudio();
 
     }
 

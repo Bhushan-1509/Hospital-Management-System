@@ -1,19 +1,48 @@
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 class AdminLoginBtnActionListener implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         InitialLoading.load.dispose();
         InitialLoading.load = new AdminLoginForm();
+        try{
+            new PlayAudio();
+        } catch(LineUnavailableException ex) {
+            ex.printStackTrace();
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        } catch(UnsupportedAudioFileException ex) {
+            ex.printStackTrace();
+        }
         InitialLoading.load.setVisible(true);
         InitialLoading.load.setDefaultCloseOperation(3);
 
     }
 }
 
+class ReceptionlistLoginBtnActionListener implements ActionListener{
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        InitialLoading.load.dispose();
+        InitialLoading.load  = new ReceptionalistLoginForm();
+        try{
+            new PlayAudio();
+        } catch(LineUnavailableException ex) {
+            ex.printStackTrace();
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        } catch(UnsupportedAudioFileException ex) {
+            ex.printStackTrace();
+        }
+
+    }
+}
 
 public class Main extends JFrame{
     LoginBtn AdminLoginBtn;
@@ -34,6 +63,7 @@ public class Main extends JFrame{
         AdminLoginBtn.addActionListener((ActionListener)new AdminLoginBtnActionListener());
         ReceptionistLoginBtn = new LoginBtn("RECEPTIONLIST");
 //        ReceptionistLoginBtn.setBounds(70,90,300,300);
+        ReceptionistLoginBtn.addActionListener((ActionListener) new ReceptionlistLoginBtnActionListener());
         DoctorLoginBtn = new LoginBtn("DOCTOR");
 //        DoctorLoginBtn.setBounds(120,100,300,300);
         JLabel adminImage = new JLabel(new ImageIcon("images/admin.png"));
