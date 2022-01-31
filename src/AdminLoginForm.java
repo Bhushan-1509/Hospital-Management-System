@@ -1,3 +1,5 @@
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -59,64 +61,52 @@ public class AdminLoginForm extends JFrame {
     class AdminPaneLoginBtnActionListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
-            //only existing user can login
-        /*
-            SQL query for sqlite database
-            SELECT * from admin_users
-            WHERE username = 'inputusername' AND password = 'inputpassword';
-        */
-            String inputUsername = userNameField.getText();
-            char[] inputPassword = passwordField.getPassword();
-            try{
-                Connection cn = null;
-                Class.forName("com.mysql.jdbc.Driver");
-                DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/info","root","");
+            Connection cn = null;
+            PreparedStatement stmt = null;
 
-                String query = "select * from admin_users " + "where username = "+ "'" + inputUsername.toString() + "'" + "and "+ "'" + inputPassword.toString() + "'" + ";";
-                Statement st = cn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
-                ResultSet result = st.executeQuery(query);
+            try{
+                DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/info", "root", "");
+                stmt = cn.prepareStatement("SELECT * FROM admin_users WHERE username = ? AND password = ?");
+                stmt.setString(1, userNameField.getText());
+                stmt.setString(2, passwordField.getPassword().toString());
+                ResultSet result = stmt.executeQuery();
                 String uname = null;
                 String passwd = null;
-                boolean res = result.first();
-                if(res == true) {
+                if(result.getRow() == 1){
+                    result.absolute(1);
                     uname = result.getString("username");
                     passwd = result.getString("password");
+                    if(uname == userNameField.getText() && passwd == passwordField.getPassword().toString() ){
+                        InitialLoading.load.dispose();
+                        new PlayAudio();
+                        InitialLoading.load = new AdminPortal();
+                        DesktopNotificationGenerator.generateDesktopNotification("Login Successful !","Admin Portal");
+
+                    }
+
                 }
-                if((uname == inputUsername) && (passwd == inputPassword.toString())) {
-
-                    InitialLoading.load.dispose();
-                    InitialLoading.load = new AdminPortal();
+                else{
                     new PlayAudio();
-                    DesktopNotificationGenerator.generateDesktopNotification("Login successful !","Admin Portal");
+                    JOptionPane.showMessageDialog(InitialLoading.load,"User not found ","Alert",JOptionPane.INFORMATION_MESSAGE);
 
                 }
-               else if(uname != inputUsername && passwd == inputPassword.toString()){
-                    new PlayAudio();
-                    JOptionPane.showMessageDialog(InitialLoading.load, "This user does not exists !", "Alert", JOptionPane.WARNING_MESSAGE);
-               }
-//                if(result.isFirst()){
-//                    DesktopNotificationGenerator.generateDesktopNotification("First","ahhhhhhhh!");
-//
-//                }
-//                if(result.isBeforeFirst()){
-//                    DesktopNotificationGenerator.generateDesktopNotification("before first","ahhhhhhhh!");
-//
-//                }
-//                if(result.isAfterLast()){
-//                    DesktopNotificationGenerator.generateDesktopNotification("after last","ahhhhhhhh!");
-//
-//                }
 
 
-                st.close();
-                cn.close();
-
-
+            } catch(SQLException throwables) {
+                throwables.printStackTrace();
+            } catch(IOException ioException) {
+                ioException.printStackTrace();
+            } catch(InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            } catch(AWTException awtException) {
+                awtException.printStackTrace();
+            } catch(UnsupportedAudioFileException unsupportedAudioFileException) {
+                unsupportedAudioFileException.printStackTrace();
+            } catch(LineUnavailableException lineUnavailableException) {
+                lineUnavailableException.printStackTrace();
             }
-            catch(Exception ex) {
-                ex.printStackTrace();
-            }
+
 
         }
     }
