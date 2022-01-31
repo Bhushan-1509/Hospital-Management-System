@@ -44,7 +44,7 @@ public class AdminLoginForm extends JFrame {
         loginBtn.setText("Login");
         loginBtn.setBounds(570,490,180,50);
         loginBtn.setFont(new Font("Arial", Font.PLAIN, 17));
-        loginBtn.addActionListener(new AdminPaneLoginBtnActionListener());
+        loginBtn.addActionListener((ActionListener) new AdminPaneLoginBtnActionListener());
         setLayout(new BorderLayout());
         setSize(1500,700);
         setTitle("Admin Login Panel ");
@@ -61,50 +61,37 @@ public class AdminLoginForm extends JFrame {
     class AdminPaneLoginBtnActionListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
-            Connection cn = null;
-            PreparedStatement stmt = null;
-
+            Connection con;
+            PreparedStatement stmt;
             try{
-                DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/info", "root", "");
-                stmt = cn.prepareStatement("SELECT * FROM admin_users WHERE username = ? AND password = ?");
-                stmt.setString(1, userNameField.getText());
-                stmt.setString(2, passwordField.getPassword().toString());
+                con = Dbconnect.dbConnect();
+                stmt = con.prepareStatement("SELECT * FROM admin_users WHERE username = ? AND password = ?");
+                stmt.setString(1,userNameField.getText());
+                stmt.setString(2,passwordField.getPassword().toString().trim());
                 ResultSet result = stmt.executeQuery();
                 String uname = null;
                 String passwd = null;
-                if(result.getRow() == 1){
-                    result.absolute(1);
+
+                while(result.next()){
                     uname = result.getString("username");
                     passwd = result.getString("password");
-                    if(uname == userNameField.getText() && passwd == passwordField.getPassword().toString() ){
-                        InitialLoading.load.dispose();
-                        new PlayAudio();
-                        InitialLoading.load = new AdminPortal();
-                        DesktopNotificationGenerator.generateDesktopNotification("Login Successful !","Admin Portal");
-
-                    }
+                }
+                if(uname != null && passwd != null){
+                    InitialLoading.load.dispose();
+                    new PlayAudio();
+                    InitialLoading.load = new AdminPortal();
+                    DesktopNotificationGenerator.generateDesktopNotification("Login Successful !","Admin Portal");
 
                 }
                 else{
                     new PlayAudio();
                     JOptionPane.showMessageDialog(InitialLoading.load,"User not found ","Alert",JOptionPane.INFORMATION_MESSAGE);
-
                 }
 
 
-            } catch(SQLException throwables) {
-                throwables.printStackTrace();
-            } catch(IOException ioException) {
-                ioException.printStackTrace();
-            } catch(InterruptedException interruptedException) {
-                interruptedException.printStackTrace();
-            } catch(AWTException awtException) {
-                awtException.printStackTrace();
-            } catch(UnsupportedAudioFileException unsupportedAudioFileException) {
-                unsupportedAudioFileException.printStackTrace();
-            } catch(LineUnavailableException lineUnavailableException) {
-                lineUnavailableException.printStackTrace();
+            }
+            catch(Exception e1){
+                e1.printStackTrace();
             }
 
 
